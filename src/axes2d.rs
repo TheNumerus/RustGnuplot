@@ -106,6 +106,14 @@ impl Axes2D
 		self
 	}
 
+	/// Like `set_x_axis` but for the cb axis.
+	pub fn set_cb_axis<'l>(&'l mut self, show: bool, options: &[PlotOption<&str>]) -> &'l mut Self
+	{
+		self.common.cb_axis.show = show;
+		self.common.cb_axis.options = options.to_one_way_owned();
+		self
+	}
+
 	/// Adds an arrow to the plot. The arrow is drawn from `(x1, y1)` to `(x2, y2)` with the arrow point towards `(x2, y2)`.
 	/// # Arguments
 	/// * `x1` - X coordinate of the arrow start
@@ -779,6 +787,18 @@ impl Axes2DPrivate for Axes2D
 			grid_axes.push(self.common.cb_axis.axis);
 		}
 		self.common.write_grid_options(writer, &grid_axes, version);
+		if !self.common.x_axis.show
+		{
+			writer.write_str("unset xtics\n");
+		}
+		if !self.common.y_axis.show
+		{
+			writer.write_str("unset ytics\n");
+		}
+		if !self.common.cb_axis.show
+		{
+			writer.write_str("unset colorbox\n");
+		}
 		self.common.write_out_elements("plot", writer, version);
 	}
 }
